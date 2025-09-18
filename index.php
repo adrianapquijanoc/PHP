@@ -1,36 +1,64 @@
 <?php
-// Inicializar variables
-$fibo = [];
-$frase = "";
-$esPalindromo = null;
-$numeroPrimo = null;
+// ==========================
+// BLOQUE PHP - PROCESO FORMULARIO
+// ==========================
 
-// Ejecutar solo si se envió el formulario
-if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST") {
-    // === Fibonacci ===
-    $numFibo = intval($_POST["numFibo"]);
-    if ($numFibo > 0) {
+// Inicializar variables para almacenar resultados
+$fibo = [];            // Array que contendrá la secuencia de Fibonacci
+$frase = "";           // Frase ingresada para verificar palíndromo
+$esPalindromo = null;  // Booleano que indica si la frase es palíndromo
+$numeroPrimo = null;   // Número ingresado para verificar si es primo
+$esPrimo = null;       // Booleano que indica si el número es primo
+
+// ==========================
+// PROCESAR FORMULARIO
+// Solo se ejecuta si el usuario envió un valor válido en 'numFibo'
+// intval() convierte a entero. '?? 0' asegura que si no se envió, tome 0.
+// El if se cumple solo si el valor convertido es mayor que 0
+// ==========================
+if (intval($_POST["numFibo"] ?? 0)) {
+
+    // ==========================
+    // FIBONACCI
+    // ==========================
+    $numFibo = intval($_POST["numFibo"]);  // Convertir a entero
+
+    if ($numFibo === 1) {
+        // Caso especial: solo 1 término
+        $fibo = [0];
+    } elseif ($numFibo > 1) {
+        // Para 2 o más términos, iniciar la secuencia
         $fibo = [0, 1];
         for ($i = 2; $i < $numFibo; $i++) {
+            // Cada término es la suma de los dos anteriores
             $fibo[$i] = $fibo[$i - 1] + $fibo[$i - 2];
         }
-        if ($numFibo === 1) $fibo = [0];
     }
 
-    // === Palíndromo ===
-    $frase = $_POST["frase"];
+    // ==========================
+    // PALÍNDROMO
+    // ==========================
+    $frase = $_POST["frase"] ?? "";  // Obtener la frase del formulario
+    // Limpiar frase: quitar caracteres no alfanuméricos y pasar a minúsculas
     $limpio = preg_replace("/[^A-Za-z0-9]/", "", strtolower($frase));
+    // Comparar con su reverso para determinar si es palíndromo
     $esPalindromo = $limpio === strrev($limpio);
 
-    // === Número Primo ===
-    $numeroPrimo = intval($_POST["numPrimo"] ?? 0);
-    $esPrimo = false;
+    // ==========================
+    // NÚMERO PRIMO
+    // ==========================
+    $numeroPrimo = intval($_POST["numPrimo"] ?? 0); // Obtener número
+    $esPrimo = false;  // Inicialmente asumimos que no es primo
+
     if ($numeroPrimo > 1) {
-        $esPrimo = true;
+        $esPrimo = true;  // Suponemos que es primo
+
+        // Verificar divisores desde 2 hasta la raíz cuadrada del número
         for ($i = 2; $i <= sqrt($numeroPrimo); $i++) {
             if ($numeroPrimo % $i === 0) {
+                // Si encontramos un divisor, no es primo
                 $esPrimo = false;
-                break;
+                break; // Salir del bucle
             }
         }
     }
@@ -90,7 +118,9 @@ if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST") 
 <div class="container py-5">
     <h1 class="text-center mb-5 display-5 fw-bold">🎉 Ejercicios PHP</h1>
 
-    <!-- Formulario -->
+    <!-- ==========================
+         FORMULARIO DE ENTRADA
+         ========================== -->
     <div class="row justify-content-center mb-5">
         <div class="col-12 col-md-8 col-lg-6">
             <div class="card bg-dark bg-opacity-75 p-4 shadow-lg card-glow">
@@ -116,9 +146,13 @@ if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST") 
         </div>
     </div>
 
-    <!-- Resultados -->
+    <!-- ==========================
+         RESULTADOS
+         ========================== -->
     <?php if (!empty($fibo) || $frase !== "" || $numeroPrimo !== null): ?>
     <div class="row g-4 justify-content-center">
+
+        <!-- Fibonacci -->
         <?php if (!empty($fibo)): ?>
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card bg-dark bg-opacity-75 p-3 shadow-lg card-glow text-center">
@@ -128,6 +162,7 @@ if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST") 
         </div>
         <?php endif; ?>
 
+        <!-- Palíndromo -->
         <?php if ($frase !== ""): ?>
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card bg-dark bg-opacity-75 p-3 shadow-lg card-glow text-center">
@@ -140,6 +175,7 @@ if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST") 
         </div>
         <?php endif; ?>
 
+        <!-- Número Primo -->
         <?php if ($numeroPrimo !== null): ?>
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card bg-dark bg-opacity-75 p-3 shadow-lg card-glow text-center">
